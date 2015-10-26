@@ -1,0 +1,5 @@
+D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\PowerCrypt4\obj\Debug\PowerCrypt4.csprojResolveAssemblyReference.cache
+D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\PowerCrypt4\bin\Debug\PowerCrypt4.dll
+D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\PowerCrypt4\bin\Debug\PowerCrypt4.pdb
+D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\PowerCrypt4\obj\Debug\PowerCrypt4.dll
+D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\PowerCrypt4\obj\Debug\PowerCrypt4.pdb
