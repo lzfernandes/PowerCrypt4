@@ -1,8 +1,0 @@
-D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\CDemo7\bin\Debug\CDemo7.exe.config
-D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\CDemo7\bin\Debug\CDemo7.exe
-D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\CDemo7\bin\Debug\CDemo7.pdb
-D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\CDemo7\obj\Debug\CDemo7.csprojResolveAssemblyReference.cache
-D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\CDemo7\obj\Debug\CDemo7.exe
-D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\CDemo7\obj\Debug\CDemo7.pdb
-D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\CDemo7\bin\Debug\PowerCrypt4.dll
-D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\CDemo7\bin\Debug\PowerCrypt4.pdb
