@@ -46,6 +46,22 @@ namespace OmniBean.PowerCrypt4
         /// </summary>
         /// <param name="rsaKeyInfo">The XML string to initialize the RSA Provider with.</param>
         /// <param name="keySize">The length of the key.</param>
+        /// <returns>PowerRSA object initialized with XML string.</returns>
+        public PowerRSA(string rsaKeyInfo, int keySize)
+        {
+            this.KeySize = keySize;
+            int keyLength = keySize;
+            csp = new RSACryptoServiceProvider(keyLength);
+            csp.FromXmlString(rsaKeyInfo);
+            rsaProvider = new RSAProvider(rsaKeyInfo, keyLength);
+            rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
+        }
+
+        /// <summary>
+        /// Initializes the RSA Provider with either only a public key or a public/private key pair.
+        /// </summary>
+        /// <param name="rsaKeyInfo">The XML string to initialize the RSA Provider with.</param>
+        /// <param name="keySize">The length of the key.</param>
         /// <param name="hashAlgorithm">The hash algorithm to use.</param>
         /// <returns>PowerRSA object initialized with XML string.</returns>
         public PowerRSA(string rsaKeyInfo, int keySize, PHashAlgorithm hashAlgorithm)
@@ -57,13 +73,13 @@ namespace OmniBean.PowerCrypt4
             rsaProvider = new RSAProvider(rsaKeyInfo, keyLength);
             switch ((int)hashAlgorithm)
             {
-                case 1:
+                case 0:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA1;
                     break;
-                case 2:
+                case 1:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
                     break;
-                case 3:
+                case 2:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA512;
                     break;
             }
@@ -78,13 +94,13 @@ namespace OmniBean.PowerCrypt4
             rsaProvider = new RSAProvider(rsaKeyInfo, keyLength);
             switch ((int)hashAlgorithm)
             {
-                case 1:
+                case 0:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA1;
                     break;
-                case 2:
+                case 1:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
                     break;
-                case 3:
+                case 2:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA512;
                     break;
             }

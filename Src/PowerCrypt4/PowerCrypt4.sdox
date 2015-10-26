@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<SDConfig>
+  <section guid="9e8e8bc4-bfdd-11e3-a297-170828518c08">
+    <item key="Theme" value="D:\nihal\Programs\C#\sharpDox.1.0rc2\sharpDox 1.0rc2\plugins\html\themes\sharpDox" />
+    <item key="PrimaryColor" value="#F5F4F0" />
+    <item key="SecondaryColor" value="#00FF7F" />
+    <item key="DisableSequenceDiagrams" value="False" />
+    <item key="FooterLine" value="(c) 2015 The OmniBean Team" />
+  </section>
+  <section guid="feacbce2-8290-4d90-bb05-373b9d7dbbfc">
+    <item key="ConfigFileName" value="PowerCrypt4" />
+    <item key="ProjectName" value="PowerCrypt4" />
+    <item key="Author" value="The OmniBean Team" />
+    <LogoPath>
+      <Relative>..\..\..\..\..\..\..\pictures\icons\logo.png</Relative>
+      <Full>D:\nihal\Pictures\ICONS\logo.png</Full>
+    </LogoPath>
+    <InputFile>
+      <Relative>powercrypt4.csproj</Relative>
+      <Full>D:\nihal\Programs\C#\OmniBean\PowerCrypt4\v1\PowerCrypt4\PowerCrypt4\PowerCrypt4.csproj</Full>
+    </InputFile>
+    <OutputPath>
+      <Relative>c:\users\nihal\desktop\powercrypt4 doc</Relative>
+      <Full>C:\Users\Nihal\Desktop\PowerCrypt4 Doc</Full>
+    </OutputPath>
+    <item key="DocLanguage" value="en" />
+    <item key="ExcludePrivate" value="False" />
+    <item key="ExcludeProtected" value="False" />
+    <item key="ExcludeInternal" value="False" />
+    <item key="ExcludedIdentifiers" value="" />
+    <item key="ActivatedExporters" value="Html" />
+  </section>
+</SDConfig>

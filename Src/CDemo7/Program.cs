@@ -11,7 +11,7 @@ namespace CDemo7
 		
 		public static void Main(string[] args)
 		{
-			PowerRSA prsa = new PowerRSA(1024);
+			PowerRSA prsa = new PowerRSA(1024, PowerRSA.PHashAlgorithm.SHA256);
 			string p = "this is n";
 			string c =prsa.EncryptStringWithPublicKey(p);
 			Console.WriteLine(c);
@@ -21,6 +21,8 @@ namespace CDemo7
             prsa.Dispose();
 			PowerRSA pub = new PowerRSA(x, 1024, PowerRSA.PHashAlgorithm.SHA256);
 			string e = pub.EncryptStringWithPublicKey(p);
+            string d2 = prsa.DecryptStringWithPrivateKey(e);
+            Console.WriteLine(d2);
             pub.Dispose();
 			Console.WriteLine(e);
             string k = "1234";
