@@ -67,7 +67,7 @@ namespace OmniBean.PowerCrypt4
             return keyDerivationFunction.GetBytes(KeyLengthBits / 8);
         }
 
-        private static byte[] GenerateRandomBytes(int lengthBytes)
+        public static byte[] GenerateRandomBytes(int lengthBytes)
         {
             var bytes = new byte[lengthBytes];
             rng.GetBytes(bytes);
@@ -166,7 +166,7 @@ namespace OmniBean.PowerCrypt4
             throw new CryptographicException("Operation Failed.");
         }
 
-        private static string HexString(byte[] bytes)
+        public static string HexString(byte[] bytes)
         {
             StringBuilder sBuilder = new StringBuilder();
             for (int i = 0; i < bytes.Length; i++)
@@ -256,6 +256,11 @@ namespace OmniBean.PowerCrypt4
         public static string SHA512Hash(string password)
         {
             return AESProvider.CalculateSHA512Hash(password);
+        }
+        
+        public static string GenerateRandomString(int length)
+        {
+        	return AESProvider.HexString(AESProvider.GenerateRandomBytes(length));
         }
     }
 }

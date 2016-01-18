@@ -1,3 +1,10 @@
+#vs binaries
+bin
+obj
+*.exe
+*.dll
+*.pdb
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

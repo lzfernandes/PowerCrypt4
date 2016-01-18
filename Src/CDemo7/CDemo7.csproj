@@ -55,9 +55,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PowerCrypt4\PowerCrypt4.csproj">
+    <ProjectReference Include="..\PowerCrypt4\LibPowerCrypt4.csproj">
       <Project>{027DD64A-53EC-4AB3-BCC8-3F5C210CDCDF}</Project>
-      <Name>PowerCrypt4</Name>
+      <Name>LibPowerCrypt4</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
