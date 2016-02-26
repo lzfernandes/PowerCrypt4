@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OmniBean.PowerCrypt4.Advanced
 {
-	class ByteEncryptor
+	public class ByteEncryptor
 	{
 		static byte[] GetBytes(string str)
         {

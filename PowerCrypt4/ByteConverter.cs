@@ -8,7 +8,7 @@ using System.Text;
 
 namespace OmniBean.PowerCrypt4.Utilities
 {
-	static class ByteConverter
+	public static class ByteConverter
 	{
 		public static byte[] GetBytes(this string str)
 		{

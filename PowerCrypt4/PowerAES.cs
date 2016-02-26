@@ -7,7 +7,7 @@ using System.IO;
 
 namespace OmniBean.PowerCrypt4
 {
-    class AESProvider
+    public class AESProvider
     {
         public static int KeyLengthBits = 256; //AES Key Length in bits
         public static int SaltLength = 8; //Salt length in bytes
