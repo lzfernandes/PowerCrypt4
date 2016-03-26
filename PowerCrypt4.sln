@@ -1,7 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 5.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibPowerCrypt4", "PowerCrypt4\LibPowerCrypt4.csproj", "{027DD64A-53EC-4AB3-BCC8-3F5C210CDCDF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CDemo7", "CDemo7\CDemo7.csproj", "{4C1925AA-0688-412D-A735-CE76C7A4C599}"
@@ -20,5 +19,8 @@ Global
 		{4C1925AA-0688-412D-A735-CE76C7A4C599}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C1925AA-0688-412D-A735-CE76C7A4C599}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C1925AA-0688-412D-A735-CE76C7A4C599}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = CDemo7\CDemo7.csproj
 	EndGlobalSection
 EndGlobal

@@ -47,6 +47,9 @@ namespace CDemo7
 			Console.WriteLine(DecryptedString);
 			Console.ReadKey(true);
 			*/
+			Console.WriteLine ("Hash Test");
+			string hash = HashUtils.SHA512 (k);
+			Console.WriteLine (hash);
 		}
 	}
 }
