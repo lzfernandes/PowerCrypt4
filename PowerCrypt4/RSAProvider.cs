@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Numerics;
 using System.Linq;
-using System.Text;
-using System.IO;
+using System.Numerics;
+using System.Security.Cryptography;
 
 namespace OmniBean.PowerCrypt4
 {
@@ -53,7 +51,7 @@ namespace OmniBean.PowerCrypt4
         /// </summary>
         public bool UseCRTForPublicDecryption
         {
-            get;  set;
+            get; set;
         }
 
         /// <summary>
@@ -75,7 +73,6 @@ namespace OmniBean.PowerCrypt4
         /// <returns>Encrypted Data</returns>
         public byte[] RSAProcess(byte[] PlainText, bool usePrivate)
         {
-
             if (usePrivate && (!rsaParams.Has_PRIVATE_Info))
             {
                 throw new CryptographicException("RSA Process: Incomplete Private Key Info");
@@ -84,21 +81,21 @@ namespace OmniBean.PowerCrypt4
             if ((usePrivate == false) && (!rsaParams.Has_PUBLIC_Info))
             {
                 throw new CryptographicException("RSA Process: Incomplete Public Key Info");
-            }            
+            }
 
             BigInteger _E;
             if (usePrivate)
-                _E = rsaParams.D; 
+                _E = rsaParams.D;
             else
                 _E = rsaParams.E;
 
             BigInteger PT = RSAProviderUtils.OS2IP(PlainText, false);
             BigInteger M = BigInteger.ModPow(PT, _E, rsaParams.N);
-            
+
             if (M.Sign == -1)
-                return RSAProviderUtils.I2OSP(M + rsaParams.N, rsaParams.OctetsInModulus, false);            
+                return RSAProviderUtils.I2OSP(M + rsaParams.N, rsaParams.OctetsInModulus, false);
             else
-                return RSAProviderUtils.I2OSP(M, rsaParams.OctetsInModulus, false);                   
+                return RSAProviderUtils.I2OSP(M, rsaParams.OctetsInModulus, false);
         }
 
         /// <summary>
@@ -121,14 +118,14 @@ namespace OmniBean.PowerCrypt4
                 if (M.Sign == -1)
                     return RSAProviderUtils.I2OSP(M + rsaParams.N, rsaParams.OctetsInModulus, false);
                 else
-                    return RSAProviderUtils.I2OSP(M, rsaParams.OctetsInModulus, false); 
+                    return RSAProviderUtils.I2OSP(M, rsaParams.OctetsInModulus, false);
             }
             else
             {
                 throw new CryptographicException("RSA Decrypt CRT: Incomplete Key Info");
-            }                             
-        }        
-        
+            }
+        }
+
         private byte[] RSAProcessEncodePKCS(byte[] Message, bool usePrivate)
         {
             if (Message.Length > rsaParams.OctetsInModulus - 11)
@@ -138,10 +135,10 @@ namespace OmniBean.PowerCrypt4
             else
             {
                 // RFC3447 : Page 24. [RSAES-PKCS1-V1_5-ENCRYPT ((n, e), M)]
-                // EM = 0x00 || 0x02 || PS || 0x00 || Msg 
-                
+                // EM = 0x00 || 0x02 || PS || 0x00 || Msg
+
                 List<byte> PCKSv15_Msg = new List<byte>();
-                
+
                 PCKSv15_Msg.Add(0x00);
                 PCKSv15_Msg.Add(0x02);
 
@@ -155,7 +152,7 @@ namespace OmniBean.PowerCrypt4
 
                 PCKSv15_Msg.AddRange(Message);
 
-                return RSAProcess(PCKSv15_Msg.ToArray() ,  usePrivate);
+                return RSAProcess(PCKSv15_Msg.ToArray(), usePrivate);
             }
         }
 
@@ -193,7 +190,6 @@ namespace OmniBean.PowerCrypt4
             }
         }
 
-       
         private byte[] RSAProcessEncodeOAEP(byte[] M, byte[] P, bool usePrivate)
         {
             //                           +----------+---------+-------+
@@ -223,7 +219,7 @@ namespace OmniBean.PowerCrypt4
                 byte[] PS = new byte[rsaParams.OctetsInModulus - mLen - 2 * rsaParams.hLen - 2];
                 //4. pHash = Hash(P),
                 byte[] pHash = rsaParams.ComputeHash(P);
-                
+
                 //5. DB = pHash||PS||01||M.
                 List<byte> _DB = new List<byte>();
                 _DB.AddRange(pHash);
@@ -232,7 +228,7 @@ namespace OmniBean.PowerCrypt4
                 _DB.AddRange(M);
                 byte[] DB = _DB.ToArray();
 
-                //6. Generate a random octet string seed of length hLen.                
+                //6. Generate a random octet string seed of length hLen.
                 byte[] seed = new byte[rsaParams.hLen];
                 rng.GetBytes(seed);
 
@@ -258,8 +254,7 @@ namespace OmniBean.PowerCrypt4
             }
         }
 
-        
-        private byte[] Decrypt(byte[] Message, byte [] Parameters, bool usePrivate, bool fOAEP)
+        private byte[] Decrypt(byte[] Message, byte[] Parameters, bool usePrivate, bool fOAEP)
         {
             byte[] EM = new byte[0];
             try
@@ -409,7 +404,6 @@ namespace OmniBean.PowerCrypt4
                     {// #1: Invalid Key / PKCS Encoding
                         throw new CryptographicException("PKCS v1.5 Decode Error");
                     }
-
                 }
             }
             catch (CryptographicException ex)
@@ -420,11 +414,9 @@ namespace OmniBean.PowerCrypt4
             {
                 throw new CryptographicException("Exception while decoding");
             }
-
-           
         }
 
-        #endregion
+        #endregion PRIVATE FUNCTIONS
 
         #region PUBLIC FUNCTIONS
 
@@ -465,7 +457,7 @@ namespace OmniBean.PowerCrypt4
         /// <param name="Message">Message to Encrypt. Maximum message length is For OAEP [ModulusLengthInOctets - (2 * HashLengthInOctets) - 2] and for PKCS [ModulusLengthInOctets - 11]</param>
         /// <param name="fOAEP">True to use OAEP encoding (Recommended), False to use PKCS v1.5 Padding.</param>
         /// <returns>Encrypted message.</returns>
-        public byte[] Encrypt(byte[] Message,  bool fOAEP)
+        public byte[] Encrypt(byte[] Message, bool fOAEP)
         {
             if (fOAEP)
             {
@@ -476,7 +468,7 @@ namespace OmniBean.PowerCrypt4
                 return RSAProcessEncodePKCS(Message, false);
             }
         }
-        
+
         /// <summary>
         /// Decrypts the given RSA encrypted message.
         /// </summary>
@@ -507,13 +499,11 @@ namespace OmniBean.PowerCrypt4
         /// <param name="Message">The encrypted message.</param>
         /// <param name="fOAEP">True to use OAEP.</param>
         /// <returns>Encrypted byte array.</returns>
-        public byte[] Decrypt(byte[] Message,  bool fOAEP)
+        public byte[] Decrypt(byte[] Message, bool fOAEP)
         {
             return Decrypt(Message, new byte[0], true, fOAEP);
         }
 
-        #endregion
-
+        #endregion PUBLIC FUNCTIONS
     }
 }
-

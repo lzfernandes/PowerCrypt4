@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Cryptography;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace OmniBean.PowerCrypt4
 {
@@ -36,7 +34,7 @@ namespace OmniBean.PowerCrypt4
             {
                 ////Utilities.OnError(Utilities.GetCurrentMethod(), ex);
             }
-            throw new CryptographicException("Key did not math the ciphertext.");
+            throw new CryptographicException("Key did not match the ciphertext.");
         }
 
         public static string EncryptString(string plaintext, string passphrase)
@@ -141,7 +139,6 @@ namespace OmniBean.PowerCrypt4
                 byte[] inputBytes = Encoding.UTF8.GetBytes(input);
                 byte[] hash = sha512.ComputeHash(inputBytes);
                 return HexString(hash);
-
             }
             catch (Exception ex)
             {
@@ -257,10 +254,10 @@ namespace OmniBean.PowerCrypt4
         {
             return AESProvider.CalculateSHA512Hash(password);
         }
-        
+
         public static string GenerateRandomString(int length)
         {
-        	return AESProvider.HexString(AESProvider.GenerateRandomBytes(length));
+            return AESProvider.HexString(AESProvider.GenerateRandomBytes(length));
         }
     }
 }

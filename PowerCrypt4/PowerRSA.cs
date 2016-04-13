@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace OmniBean.PowerCrypt4
 {
     public class PowerRSA
     {
-        int KeySize;
-        RSAProvider rsaProvider;
-        RSACryptoServiceProvider csp;
+        private int KeySize;
+        private RSAProvider rsaProvider;
+        private RSACryptoServiceProvider csp;
 
         /// <summary>
         /// Disposes the cryptographic service provider and keeps it from persisting in the CSP Container.
@@ -76,9 +76,11 @@ namespace OmniBean.PowerCrypt4
                 case 0:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA1;
                     break;
+
                 case 1:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
                     break;
+
                 case 2:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA512;
                     break;
@@ -97,14 +99,17 @@ namespace OmniBean.PowerCrypt4
                 case 0:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA1;
                     break;
+
                 case 1:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
                     break;
+
                 case 2:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA512;
                     break;
             }
         }
+
         /// <summary>
         /// Initializes the RSA Provider.
         /// </summary>
@@ -115,6 +120,7 @@ namespace OmniBean.PowerCrypt4
             PHashAlgorithm ha = PHashAlgorithm.SHA256;
             InitRSA(keySize, ha);
         }
+
         /// <summary>
         /// Initializes the RSA Provider.
         /// </summary>
@@ -132,12 +138,14 @@ namespace OmniBean.PowerCrypt4
             string CipherText = Convert.ToBase64String(CTX);
             return CipherText;
         }
+
         public string EncryptStringWithPrivateKey(string plainText)
         {
             byte[] CTX = rsaProvider.Encrypt(Encoding.UTF8.GetBytes(plainText), true, true);
             string CipherText = Convert.ToBase64String(CTX);
             return CipherText;
         }
+
         public string DecryptStringWithPrivateKey(string cipherText)
         {
             byte[] CTX = Convert.FromBase64String(cipherText);
@@ -145,6 +153,7 @@ namespace OmniBean.PowerCrypt4
             string DecryptedString = Encoding.UTF8.GetString(PTX);
             return DecryptedString;
         }
+
         public string DecryptStringWithPublicKey(string cipherText)
         {
             byte[] CTX = Convert.FromBase64String(cipherText);

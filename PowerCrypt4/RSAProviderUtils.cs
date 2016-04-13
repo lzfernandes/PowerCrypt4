@@ -1,12 +1,4 @@
-﻿// @Date : 15th July 2012
-// @Author : Arpan Jati (arpan4017@yahoo.com; arpan4017@gmail.com)
-// @Library : ArpanTECH.RSAProvider
-// @CodeProject: http://www.codeproject.com/Articles/421656/RSA-Library-with-Private-Key-Encryption-in-Csharp  
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Numerics;
 using System.Xml;
 
@@ -24,7 +16,7 @@ namespace OmniBean.PowerCrypt4
         /// <param name="ModulusSize">RSA Modulus Size</param>
         /// <returns>RSAProviderParameters class</returns>
         public static RSAProviderParameters GetRSAProviderParameters(string XMLKeyInfo, int ModulusSize)
-        {           
+        {
             bool Has_CRT_Info = false;
             bool Has_PRIVATE_Info = false;
             bool Has_PUBLIC_Info = false;
@@ -37,7 +29,7 @@ namespace OmniBean.PowerCrypt4
             catch (System.Exception ex)
             {
                 throw new Exception("Malformed KeyInfo XML: " + ex.Message);
-            }      
+            }
 
             byte[] Modulus = new byte[0];
             byte[] Exponent = new byte[0];
@@ -45,7 +37,7 @@ namespace OmniBean.PowerCrypt4
             byte[] P = new byte[0];
             byte[] Q = new byte[0];
             byte[] DP = new byte[0];
-            byte[] DQ = new byte[0]; 
+            byte[] DQ = new byte[0];
             byte[] InverseQ = new byte[0];
 
             try
@@ -91,8 +83,6 @@ namespace OmniBean.PowerCrypt4
             }
 
             throw new Exception("Could not process XMLKeyInfo. Incomplete key information.");
-
-            
         }
 
         /// <summary>
@@ -176,7 +166,5 @@ namespace OmniBean.PowerCrypt4
                 Array.Copy(temp, bytes, temp.Length);
             }
         }
-
-
     }
 }

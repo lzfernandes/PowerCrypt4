@@ -1,38 +1,38 @@
 ﻿/*
 
  */
+
 using System;
 using OmniBean.PowerCrypt4;
 
 namespace CDemo7
 {
-	class Program
-	{
-		
-		public static void Main(string[] args)
-		{
-			PowerRSA prsa = new PowerRSA(1024, PowerRSA.PHashAlgorithm.SHA256);
-			string p = "this is n";
-			string c =prsa.EncryptStringWithPublicKey(p);
-			Console.WriteLine(c);
-			string d = prsa.DecryptStringWithPrivateKey(c);
-			Console.WriteLine(d);
-			string x = prsa.PublicKey;
+    internal class Program
+    {
+        public static void Main(string[] args)
+        {
+            PowerRSA prsa = new PowerRSA(1024, PowerRSA.PHashAlgorithm.SHA256);
+            string p = "this is n";
+            string c = prsa.EncryptStringWithPublicKey(p);
+            Console.WriteLine(c);
+            string d = prsa.DecryptStringWithPrivateKey(c);
+            Console.WriteLine(d);
+            string x = prsa.PublicKey;
             prsa.Dispose();
-			PowerRSA pub = new PowerRSA(x, 1024, PowerRSA.PHashAlgorithm.SHA256);
-			string e = pub.EncryptStringWithPublicKey(p);
+            PowerRSA pub = new PowerRSA(x, 1024, PowerRSA.PHashAlgorithm.SHA256);
+            string e = pub.EncryptStringWithPublicKey(p);
             string d2 = prsa.DecryptStringWithPrivateKey(e);
             Console.WriteLine(d2);
             pub.Dispose();
-			Console.WriteLine(e);
+            Console.WriteLine(e);
             string k = "1234";
-            string a1 = PowerAES.Encrypt(p , k);
+            string a1 = PowerAES.Encrypt(p, k);
             Console.WriteLine(a1);
             string d1 = PowerAES.Decrypt(a1, k);
             Console.WriteLine(d1);
             Console.WriteLine(PowerAES.SHA512Hash(p));
-			Console.ReadKey();
-			/*
+            Console.ReadKey();
+            /*
 			Console.WriteLine("PowerCrypt4");
 			int keyLength = 1024;
 			RSACryptoServiceProvider csp = new RSACryptoServiceProvider(keyLength);
@@ -47,9 +47,9 @@ namespace CDemo7
 			Console.WriteLine(DecryptedString);
 			Console.ReadKey(true);
 			*/
-			Console.WriteLine ("Hash Test");
-			string hash = HashUtils.SHA512 (k);
-			Console.WriteLine (hash);
-		}
-	}
+            Console.WriteLine("Hash Test");
+            string hash = HashUtils.SHA512(k);
+            Console.WriteLine(hash);
+        }
+    }
 }
