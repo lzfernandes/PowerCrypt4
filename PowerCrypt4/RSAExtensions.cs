@@ -57,7 +57,7 @@ namespace OmniBean.PowerCrypt4
             return signedString;
         }
         
-        public static bool VerifyWithPKCSPublicKey(String message, String expectedSignature, PowerRSA prsa)
+        public static bool VerifyWithPKCSPublicKey(string message, string expectedSignature, PowerRSA prsa)
         {
         	var rsa = RSA.Create();
 			rsa.FromXmlString(prsa.PublicKey);
