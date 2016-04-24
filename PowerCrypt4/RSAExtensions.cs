@@ -1,15 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Text;
-using OmniBean.PowerCrypt4.Utilities;
 using System.Security.Cryptography;
-using Org.BouncyCastle.Cms;
-using Org.BouncyCastle.Asn1;
-using Org.BouncyCastle.Crypto;
+using System.Text;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Utilities.Encoders;
 
 namespace OmniBean.PowerCrypt4
 {
@@ -18,51 +13,51 @@ namespace OmniBean.PowerCrypt4
     /// </summary>
     public static class RSAExtensions
     {
-    	/// <summary>
-    	/// Generates a PKCS private key from the PowerRSA object
-    	/// </summary>
-    	/// <param name="prsa"></param>
-    	/// <returns></returns>
+        /// <summary>
+        /// Generates a PKCS private key from the PowerRSA object
+        /// </summary>
+        /// <param name="prsa"></param>
+        /// <returns></returns>
         public static string ConvertPrivateKeyToPKCS(PowerRSA prsa)
         {
             var rsa = RSA.Create();
-			rsa.FromXmlString(prsa.PrivateKey);
+            rsa.FromXmlString(prsa.PrivateKey);
             var bcKeyPair = DotNetUtilities.GetRsaKeyPair(rsa);
             var pkcs8Gen = new Pkcs8Generator(bcKeyPair.Private);
             var pemObj = pkcs8Gen.Generate();
-			string outputPem;
+            string outputPem;
             using (var sw = new StringWriter())
             {
-				var pkcs8Out = sw;
-	            var pemWriter = new PemWriter(pkcs8Out);
-	            pemWriter.WriteObject (pemObj);
-	            pkcs8Out.Close();
-				outputPem = sw.ToString();
+                var pkcs8Out = sw;
+                var pemWriter = new PemWriter(pkcs8Out);
+                pemWriter.WriteObject(pemObj);
+                pkcs8Out.Close();
+                outputPem = sw.ToString();
             }
-			return outputPem;
+            return outputPem;
         }
-        
+
         public static string SignWithPKCSPrivateKey(string plaintext, PowerRSA prsa)
         {
-			var signer = SignerUtilities.GetSigner("SHA256withRSA");
-			var rsa = RSA.Create();
-			rsa.FromXmlString(prsa.PrivateKey);
+            var signer = SignerUtilities.GetSigner("SHA256withRSA");
+            var rsa = RSA.Create();
+            rsa.FromXmlString(prsa.PrivateKey);
             var bcKeyPair = DotNetUtilities.GetRsaKeyPair(rsa);
-			signer.Init(true, bcKeyPair.Private);
-			byte[] byteplaintext = Encoding.UTF8.GetBytes(plaintext);
-			signer.BlockUpdate(byteplaintext, 0, byteplaintext.Length);
-			byte[] signature = signer.GenerateSignature();
+            signer.Init(true, bcKeyPair.Private);
+            byte[] byteplaintext = Encoding.UTF8.GetBytes(plaintext);
+            signer.BlockUpdate(byteplaintext, 0, byteplaintext.Length);
+            byte[] signature = signer.GenerateSignature();
             /* Base 64 encode the sig so its 8-bit clean */
             var signedString = Convert.ToBase64String(signature);
             return signedString;
         }
-        
+
         public static bool VerifyWithPKCSPublicKey(string message, string expectedSignature, PowerRSA prsa)
         {
-        	var rsa = RSA.Create();
-			rsa.FromXmlString(prsa.PublicKey);
-			/* Make the key */
-			RsaKeyParameters key = DotNetUtilities.GetRsaPublicKey(rsa);
+            var rsa = RSA.Create();
+            rsa.FromXmlString(prsa.PublicKey);
+            /* Make the key */
+            RsaKeyParameters key = DotNetUtilities.GetRsaPublicKey(rsa);
             /* Init alg */
             var signer = SignerUtilities.GetSigner("SHA256withRSA");
             /* Populate key */

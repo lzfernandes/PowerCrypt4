@@ -11,7 +11,7 @@ namespace CDemo7
     {
         public static void Main(string[] args)
         {
-			int rsaKeySize = 728;
+            int rsaKeySize = 728;
             PowerRSA prsa = new PowerRSA(rsaKeySize, PowerRSA.PHashAlgorithm.SHA256);
             string p = "this is n";
             string c = prsa.EncryptStringWithPublicKey(p);
@@ -19,20 +19,20 @@ namespace CDemo7
             string d = prsa.DecryptStringWithPrivateKey(c);
             Console.WriteLine(d);
             string x = prsa.PublicKey;
-			Console.WriteLine("RSAProvider Data: "+prsa.PrivateKey);
-			Console.WriteLine("Exporting Private key to PKCS format:");
-			string priPemKey = RSAExtensions.ConvertPrivateKeyToPKCS(prsa);
-			Console.WriteLine(priPemKey);
-			Console.Write("PKCS Signing...");
-			string signData = "Hello, World!";
-			string signature = RSAExtensions.SignWithPKCSPrivateKey(signData, prsa);
-			Console.WriteLine(signature);
-			Console.Write("Verifying...");
-			bool verification = RSAExtensions.VerifyWithPKCSPublicKey(signData, signature, prsa);
-			Console.WriteLine(verification);
-			
+            Console.WriteLine("RSAProvider Data: " + prsa.PrivateKey);
+            Console.WriteLine("Exporting Private key to PKCS format:");
+            string priPemKey = RSAExtensions.ConvertPrivateKeyToPKCS(prsa);
+            Console.WriteLine(priPemKey);
+            Console.Write("PKCS Signing...");
+            string signData = "Hello, World!";
+            string signature = RSAExtensions.SignWithPKCSPrivateKey(signData, prsa);
+            Console.WriteLine(signature);
+            Console.Write("Verifying...");
+            bool verification = RSAExtensions.VerifyWithPKCSPublicKey(signData, signature, prsa);
+            Console.WriteLine(verification);
+
             prsa.Dispose();
-            
+
             PowerRSA pub = new PowerRSA(x, rsaKeySize, PowerRSA.PHashAlgorithm.SHA256);
             string e = pub.EncryptStringWithPublicKey(p);
             string d2 = prsa.DecryptStringWithPrivateKey(e);

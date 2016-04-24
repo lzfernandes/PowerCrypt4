@@ -9,10 +9,10 @@ namespace OmniBean.PowerCrypt4
         private int KeySize;
         private RSAProvider rsaProvider;
         private RSACryptoServiceProvider csp;
-        
+
         public RSACryptoServiceProvider CryptoServiceProvider
         {
-			get { return csp; }
+            get { return csp; }
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace OmniBean.PowerCrypt4
                 return csp.ToXmlString(true);
             }
         }
-        
+
         /// <summary>
         /// Initializes the RSA Provider from an RSACryptoServiceProvider instance
         /// </summary>
@@ -53,7 +53,7 @@ namespace OmniBean.PowerCrypt4
         /// <returns>PowerRSA object initialized with al RSACryptoServiceProvider instance.</returns>
         public PowerRSA(RSACryptoServiceProvider cryptoServiceProviderInstance)
         {
-			this.csp = cryptoServiceProviderInstance;
+            this.csp = cryptoServiceProviderInstance;
             rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
         }
 
