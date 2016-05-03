@@ -11,9 +11,9 @@ namespace CDemo7
     {
         public static void Main(string[] args)
         {
-            int rsaKeySize = 728;
+            const int rsaKeySize = 728;
             PowerRSA prsa = new PowerRSA(rsaKeySize, PowerRSA.PHashAlgorithm.SHA256);
-            string p = "this is n";
+            const string p = "this is n";
             string c = prsa.EncryptStringWithPublicKey(p);
             Console.WriteLine(c);
             string d = prsa.DecryptStringWithPrivateKey(c);
@@ -24,7 +24,7 @@ namespace CDemo7
             string priPemKey = RSAExtensions.ConvertPrivateKeyToPKCS(prsa);
             Console.WriteLine(priPemKey);
             Console.Write("PKCS Signing...");
-            string signData = "Hello, World!";
+            const string signData = "Hello, World!";
             string signature = RSAExtensions.SignWithPKCSPrivateKey(signData, prsa);
             Console.WriteLine(signature);
             Console.Write("Verifying...");
@@ -39,7 +39,7 @@ namespace CDemo7
             Console.WriteLine(d2);
             pub.Dispose();
             Console.WriteLine(e);
-            string k = "1234";
+            const string k = "1234";
             string a1 = PowerAES.Encrypt(p, k);
             Console.WriteLine(a1);
             string d1 = PowerAES.Decrypt(a1, k);
