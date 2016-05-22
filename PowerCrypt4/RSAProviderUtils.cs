@@ -5,40 +5,40 @@ using System.Xml;
 namespace OmniBean.PowerCrypt4
 {
     /// <summary>
-    /// Utility class for RSAProvider
+    ///     Utility class for RSAProvider
     /// </summary>
     public class RSAProviderUtils
     {
         /// <summary>
-        /// Creates a RSAProviderParameters class from a given XMLKeyInfo string.
+        ///     Creates a RSAProviderParameters class from a given XMLKeyInfo string.
         /// </summary>
         /// <param name="XMLKeyInfo">Key Data.</param>
         /// <param name="ModulusSize">RSA Modulus Size</param>
         /// <returns>RSAProviderParameters class</returns>
         public static RSAProviderParameters GetRSAProviderParameters(string XMLKeyInfo, int ModulusSize)
         {
-            bool Has_CRT_Info = false;
-            bool Has_PRIVATE_Info = false;
-            bool Has_PUBLIC_Info = false;
+            var Has_CRT_Info = false;
+            var Has_PRIVATE_Info = false;
+            var Has_PUBLIC_Info = false;
 
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             try
             {
                 doc.LoadXml(XMLKeyInfo);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Malformed KeyInfo XML: " + ex.Message);
             }
 
-            byte[] Modulus = new byte[0];
-            byte[] Exponent = new byte[0];
-            byte[] D = new byte[0];
-            byte[] P = new byte[0];
-            byte[] Q = new byte[0];
-            byte[] DP = new byte[0];
-            byte[] DQ = new byte[0];
-            byte[] InverseQ = new byte[0];
+            var Modulus = new byte[0];
+            var Exponent = new byte[0];
+            var D = new byte[0];
+            var P = new byte[0];
+            var Q = new byte[0];
+            var DP = new byte[0];
+            var DQ = new byte[0];
+            var InverseQ = new byte[0];
 
             try
             {
@@ -46,7 +46,9 @@ namespace OmniBean.PowerCrypt4
                 Exponent = Convert.FromBase64String(doc.DocumentElement.SelectSingleNode("Exponent").InnerText);
                 Has_PUBLIC_Info = true;
             }
-            catch { }
+            catch
+            {
+            }
 
             try
             {
@@ -55,7 +57,9 @@ namespace OmniBean.PowerCrypt4
                 Exponent = Convert.FromBase64String(doc.DocumentElement.SelectSingleNode("Exponent").InnerText);
                 Has_PRIVATE_Info = true;
             }
-            catch { }
+            catch
+            {
+            }
 
             try
             {
@@ -67,17 +71,19 @@ namespace OmniBean.PowerCrypt4
                 InverseQ = Convert.FromBase64String(doc.DocumentElement.SelectSingleNode("InverseQ").InnerText);
                 Has_CRT_Info = true;
             }
-            catch { }
+            catch
+            {
+            }
 
             if (Has_CRT_Info && Has_PRIVATE_Info)
             {
                 return new RSAProviderParameters(Modulus, Exponent, D, P, Q, DP, DQ, InverseQ, ModulusSize);
             }
-            else if (Has_PRIVATE_Info)
+            if (Has_PRIVATE_Info)
             {
                 return new RSAProviderParameters(Modulus, Exponent, D, ModulusSize);
             }
-            else if (Has_PUBLIC_Info)
+            if (Has_PUBLIC_Info)
             {
                 return new RSAProviderParameters(Modulus, Exponent, ModulusSize);
             }
@@ -86,7 +92,7 @@ namespace OmniBean.PowerCrypt4
         }
 
         /// <summary>
-        /// Converts a non-negative integer to an octet string of a specified length.
+        ///     Converts a non-negative integer to an octet string of a specified length.
         /// </summary>
         /// <param name="x">The integer to convert.</param>
         /// <param name="xLen">Length of output octets.</param>
@@ -94,11 +100,11 @@ namespace OmniBean.PowerCrypt4
         /// <returns></returns>
         public static byte[] I2OSP(BigInteger x, int xLen, bool makeLittleEndian)
         {
-            byte[] result = new byte[xLen];
-            int index = 0;
+            var result = new byte[xLen];
+            var index = 0;
             while ((x > 0) && (index < result.Length))
             {
-                result[index++] = (byte)(x % 256);
+                result[index++] = (byte) (x%256);
                 x /= 256;
             }
             if (!makeLittleEndian)
@@ -107,7 +113,7 @@ namespace OmniBean.PowerCrypt4
         }
 
         /// <summary>
-        /// Converts a byte array to a non-negative integer.
+        ///     Converts a byte array to a non-negative integer.
         /// </summary>
         /// <param name="data">The number in the form of a byte array.</param>
         /// <param name="isLittleEndian">Endianness of the byte array.</param>
@@ -117,23 +123,23 @@ namespace OmniBean.PowerCrypt4
             BigInteger bi = 0;
             if (isLittleEndian)
             {
-                for (int i = 0; i < data.Length; i++)
+                for (var i = 0; i < data.Length; i++)
                 {
-                    bi += BigInteger.Pow(256, i) * data[i];
+                    bi += BigInteger.Pow(256, i)*data[i];
                 }
             }
             else
             {
-                for (int i = 1; i <= data.Length; i++)
+                for (var i = 1; i <= data.Length; i++)
                 {
-                    bi += BigInteger.Pow(256, i - 1) * data[data.Length - i];
+                    bi += BigInteger.Pow(256, i - 1)*data[data.Length - i];
                 }
             }
             return bi;
         }
 
         /// <summary>
-        /// Performs Bitwise Ex-OR operation to two given byte arrays.
+        ///     Performs Bitwise Ex-OR operation to two given byte arrays.
         /// </summary>
         /// <param name="A">The first byte array.</param>
         /// <param name="B">The second byte array.</param>
@@ -144,23 +150,20 @@ namespace OmniBean.PowerCrypt4
             {
                 throw new ArgumentException("XOR: Parameter length mismatch");
             }
-            else
-            {
-                byte[] R = new byte[A.Length];
+            var R = new byte[A.Length];
 
-                for (int i = 0; i < A.Length; i++)
-                {
-                    R[i] = (byte)(A[i] ^ B[i]);
-                }
-                return R;
+            for (var i = 0; i < A.Length; i++)
+            {
+                R[i] = (byte) (A[i] ^ B[i]);
             }
+            return R;
         }
 
         internal static void FixByteArraySign(ref byte[] bytes)
         {
             if ((bytes[bytes.Length - 1] & 0x80) > 0)
             {
-                byte[] temp = new byte[bytes.Length];
+                var temp = new byte[bytes.Length];
                 Array.Copy(bytes, temp, bytes.Length);
                 bytes = new byte[temp.Length + 1];
                 Array.Copy(temp, bytes, temp.Length);

@@ -6,23 +6,6 @@ namespace OmniBean.PowerCrypt4
 {
     public class PowerRSA
     {
-        private int KeySize;
-        private RSAProvider rsaProvider;
-        private RSACryptoServiceProvider csp;
-
-        public RSACryptoServiceProvider CryptoServiceProvider
-        {
-            get { return csp; }
-        }
-
-        /// <summary>
-        /// Disposes the cryptographic service provider and keeps it from persisting in the CSP Container.
-        /// </summary>
-        public void Dispose()
-        {
-            csp.PersistKeyInCsp = false;
-        }
-
         public enum PHashAlgorithm
         {
             SHA1 = 0,
@@ -30,51 +13,39 @@ namespace OmniBean.PowerCrypt4
             SHA512 = 2
         }
 
-        public string PublicKey
-        {
-            get
-            {
-                return csp.ToXmlString(false);
-            }
-        }
-
-        public string PrivateKey
-        {
-            get
-            {
-                return csp.ToXmlString(true);
-            }
-        }
+        private int KeySize;
+        private RSAProvider rsaProvider;
 
         /// <summary>
-        /// Initializes the RSA Provider from an RSACryptoServiceProvider instance
+        ///     Initializes the RSA Provider from an RSACryptoServiceProvider instance
         /// </summary>
-        /// <param name="cryptoServiceProviderInstance">The RSACryptoServiceProvider instance.</param>\
+        /// <param name="cryptoServiceProviderInstance">The RSACryptoServiceProvider instance.</param>
+        /// \
         /// <returns>PowerRSA object initialized with al RSACryptoServiceProvider instance.</returns>
         public PowerRSA(RSACryptoServiceProvider cryptoServiceProviderInstance)
         {
-            this.csp = cryptoServiceProviderInstance;
+            CryptoServiceProvider = cryptoServiceProviderInstance;
             rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
         }
 
         /// <summary>
-        /// Initializes the RSA Provider with either only a public key or a public/private key pair.
+        ///     Initializes the RSA Provider with either only a public key or a public/private key pair.
         /// </summary>
         /// <param name="rsaKeyInfo">The XML string to initialize the RSA Provider with.</param>
         /// <param name="keySize">The length of the key.</param>
         /// <returns>PowerRSA object initialized with XML string.</returns>
         public PowerRSA(string rsaKeyInfo, int keySize)
         {
-            this.KeySize = keySize;
-            int keyLength = keySize;
-            csp = new RSACryptoServiceProvider(keyLength);
-            csp.FromXmlString(rsaKeyInfo);
+            KeySize = keySize;
+            var keyLength = keySize;
+            CryptoServiceProvider = new RSACryptoServiceProvider(keyLength);
+            CryptoServiceProvider.FromXmlString(rsaKeyInfo);
             rsaProvider = new RSAProvider(rsaKeyInfo, keyLength);
             rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
         }
 
         /// <summary>
-        /// Initializes the RSA Provider with either only a public key or a public/private key pair.
+        ///     Initializes the RSA Provider with either only a public key or a public/private key pair.
         /// </summary>
         /// <param name="rsaKeyInfo">The XML string to initialize the RSA Provider with.</param>
         /// <param name="keySize">The length of the key.</param>
@@ -82,35 +53,12 @@ namespace OmniBean.PowerCrypt4
         /// <returns>PowerRSA object initialized with XML string.</returns>
         public PowerRSA(string rsaKeyInfo, int keySize, PHashAlgorithm hashAlgorithm)
         {
-            this.KeySize = keySize;
-            int keyLength = keySize;
-            csp = new RSACryptoServiceProvider(keyLength);
-            csp.FromXmlString(rsaKeyInfo);
+            KeySize = keySize;
+            var keyLength = keySize;
+            CryptoServiceProvider = new RSACryptoServiceProvider(keyLength);
+            CryptoServiceProvider.FromXmlString(rsaKeyInfo);
             rsaProvider = new RSAProvider(rsaKeyInfo, keyLength);
-            switch ((int)hashAlgorithm)
-            {
-                case 0:
-                    rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA1;
-                    break;
-
-                case 1:
-                    rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
-                    break;
-
-                case 2:
-                    rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA512;
-                    break;
-            }
-        }
-
-        private void InitRSA(int keySize, PHashAlgorithm hashAlgorithm)
-        {
-            this.KeySize = keySize;
-            int keyLength = keySize;
-            csp = new RSACryptoServiceProvider(keyLength);
-            string rsaKeyInfo = csp.ToXmlString(true);//.Replace("><", ">\r\n<");
-            rsaProvider = new RSAProvider(rsaKeyInfo, keyLength);
-            switch ((int)hashAlgorithm)
+            switch ((int) hashAlgorithm)
             {
                 case 0:
                     rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA1;
@@ -127,18 +75,18 @@ namespace OmniBean.PowerCrypt4
         }
 
         /// <summary>
-        /// Initializes the RSA Provider.
+        ///     Initializes the RSA Provider.
         /// </summary>
         /// <param name="keySize">The length of the key.</param>
         /// <returns>PowerRSA object.</returns>
         public PowerRSA(int keySize)
         {
-            PHashAlgorithm ha = PHashAlgorithm.SHA256;
+            var ha = PHashAlgorithm.SHA256;
             InitRSA(keySize, ha);
         }
 
         /// <summary>
-        /// Initializes the RSA Provider.
+        ///     Initializes the RSA Provider.
         /// </summary>
         /// <param name="keySize">The length of the key.</param>
         /// <param name="hashAlgorithm">The hash algorithm to use.</param>
@@ -148,33 +96,76 @@ namespace OmniBean.PowerCrypt4
             InitRSA(keySize, hashAlgorithm);
         }
 
+        public RSACryptoServiceProvider CryptoServiceProvider { get; private set; }
+
+        public string PublicKey
+        {
+            get { return CryptoServiceProvider.ToXmlString(false); }
+        }
+
+        public string PrivateKey
+        {
+            get { return CryptoServiceProvider.ToXmlString(true); }
+        }
+
+        /// <summary>
+        ///     Disposes the cryptographic service provider and keeps it from persisting in the CSP Container.
+        /// </summary>
+        public void Dispose()
+        {
+            CryptoServiceProvider.PersistKeyInCsp = false;
+        }
+
+        private void InitRSA(int keySize, PHashAlgorithm hashAlgorithm)
+        {
+            KeySize = keySize;
+            var keyLength = keySize;
+            CryptoServiceProvider = new RSACryptoServiceProvider(keyLength);
+            var rsaKeyInfo = CryptoServiceProvider.ToXmlString(true); //.Replace("><", ">\r\n<");
+            rsaProvider = new RSAProvider(rsaKeyInfo, keyLength);
+            switch ((int) hashAlgorithm)
+            {
+                case 0:
+                    rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA1;
+                    break;
+
+                case 1:
+                    rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA256;
+                    break;
+
+                case 2:
+                    rsaProvider.RSAProviderHashAlgorithm = RSAProviderParameters.RSAProviderHashAlgorithm.SHA512;
+                    break;
+            }
+        }
+
         public string EncryptStringWithPublicKey(string plainText)
         {
-            byte[] CTX = rsaProvider.Encrypt(Encoding.UTF8.GetBytes(plainText), false, true);
-            string CipherText = Convert.ToBase64String(CTX);
+            var CTX = rsaProvider.Encrypt(Encoding.UTF8.GetBytes(plainText), false, true);
+            var CipherText = Convert.ToBase64String(CTX);
             return CipherText;
         }
 
         public string EncryptStringWithPrivateKey(string plainText)
         {
-            byte[] CTX = rsaProvider.Encrypt(Encoding.UTF8.GetBytes(plainText), true, true);
-            string CipherText = Convert.ToBase64String(CTX);
+            var CTX = rsaProvider.Encrypt(Encoding.UTF8.GetBytes(plainText), true, true);
+            var CipherText = Convert.ToBase64String(CTX);
             return CipherText;
         }
 
         public string DecryptStringWithPrivateKey(string cipherText)
         {
-            byte[] CTX = Convert.FromBase64String(cipherText);
-            byte[] PTX = rsaProvider.Decrypt(CTX, true, true);
-            string DecryptedString = Encoding.UTF8.GetString(PTX);
+            var CTX = Convert.FromBase64String(cipherText);
+            var PTX = rsaProvider.Decrypt(CTX, true, true);
+            var DecryptedString = Encoding.UTF8.GetString(PTX);
             return DecryptedString;
         }
 
         public string DecryptStringWithPublicKey(string cipherText)
         {
-            byte[] CTX = Convert.FromBase64String(cipherText);
-            byte[] PTX = rsaProvider.Decrypt(CTX, false, true);
-            string DecryptedString = Encoding.UTF8.GetString(PTX);
+            var CTX = Convert.FromBase64String(cipherText);
+            var PTX = rsaProvider.Decrypt(CTX, false, true);
+            var DecryptedString = Encoding.UTF8.GetString(PTX);
             return DecryptedString;
         }
     }

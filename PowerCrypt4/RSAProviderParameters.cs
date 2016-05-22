@@ -5,50 +5,115 @@ using System.Security.Cryptography;
 namespace OmniBean.PowerCrypt4
 {
     /// <summary>
-    /// Class to keep the basic RSA parameters like Keys, and other information.
+    ///     Class to keep the basic RSA parameters like Keys, and other information.
     /// </summary>
     public class RSAProviderParameters : IDisposable
     {
-        private int _ModulusOctets;
-        private BigInteger _N;
-        private BigInteger _P;
-        private BigInteger _Q;
-        private BigInteger _DP;
-        private BigInteger _DQ;
-        private BigInteger _InverseQ;
-        private BigInteger _E;
-        private BigInteger _D;
-        private HashAlgorithm ha = SHA1Managed.Create();
-        private int _hLen = 20;
-        private bool _Has_CRT_Info = false;
-        private bool _Has_PRIVATE_Info = false;
-        private bool _Has_PUBLIC_Info = false;
-
-        public enum RSAProviderHashAlgorithm { SHA1, SHA256, SHA512, UNDEFINED };
-
-        public void Dispose()
+        public enum RSAProviderHashAlgorithm
         {
-            ha.Dispose();
+            SHA1,
+            SHA256,
+            SHA512,
+            UNDEFINED
         }
 
+        private HashAlgorithm ha = SHA1.Create();
+
         /// <summary>
-        /// Computes the hash from the given data.
+        ///     Initialize the RSA class. It's assumed that both the Public and Extended Private info are there.
         /// </summary>
-        /// <param name="data">The data to hash.</param>
-        /// <returns>Hash of the data.</returns>
-        public byte[] ComputeHash(byte[] data)
+        /// <param name="rsaParams">Preallocated RSAParameters containing the required keys.</param>
+        /// <param name="ModulusSize">Modulus size in bits</param>
+        public RSAProviderParameters(RSAParameters rsaParams, int ModulusSize)
         {
-            return ha.ComputeHash(data);
+            // rsaParams;
+            OctetsInModulus = ModulusSize/8;
+            E = RSAProviderUtils.OS2IP(rsaParams.Exponent, false);
+            D = RSAProviderUtils.OS2IP(rsaParams.D, false);
+            N = RSAProviderUtils.OS2IP(rsaParams.Modulus, false);
+            P = RSAProviderUtils.OS2IP(rsaParams.P, false);
+            Q = RSAProviderUtils.OS2IP(rsaParams.Q, false);
+            DP = RSAProviderUtils.OS2IP(rsaParams.DP, false);
+            DQ = RSAProviderUtils.OS2IP(rsaParams.DQ, false);
+            InverseQ = RSAProviderUtils.OS2IP(rsaParams.InverseQ, false);
+            HasCRTInfo = true;
+            Has_PUBLIC_Info = true;
+            Has_PRIVATE_Info = true;
         }
 
         /// <summary>
-        /// Gets and sets the HashAlgorithm for RSA-OAEP padding.
+        ///     Initialize the RSA class. Only the public parameters.
+        /// </summary>
+        /// <param name="Modulus">Modulus of the RSA key.</param>
+        /// <param name="Exponent">Exponent of the RSA key</param>
+        /// <param name="ModulusSize">Modulus size in number of bits. Ex: 512, 1024, 2048, 4096 etc.</param>
+        public RSAProviderParameters(byte[] Modulus, byte[] Exponent, int ModulusSize)
+        {
+            // rsaParams;
+            OctetsInModulus = ModulusSize/8;
+            E = RSAProviderUtils.OS2IP(Exponent, false);
+            N = RSAProviderUtils.OS2IP(Modulus, false);
+            Has_PUBLIC_Info = true;
+        }
+
+        /// <summary>
+        ///     Initialize the RSA class.
+        /// </summary>
+        /// <param name="Modulus">Modulus of the RSA key.</param>
+        /// <param name="Exponent">Exponent of the RSA key</param>
+        /// ///
+        /// <param name="D">Exponent of the RSA key</param>
+        /// <param name="ModulusSize">Modulus size in number of bits. Ex: 512, 1024, 2048, 4096 etc.</param>
+        public RSAProviderParameters(byte[] Modulus, byte[] Exponent, byte[] D, int ModulusSize)
+        {
+            // rsaParams;
+            OctetsInModulus = ModulusSize/8;
+            E = RSAProviderUtils.OS2IP(Exponent, false);
+            N = RSAProviderUtils.OS2IP(Modulus, false);
+            this.D = RSAProviderUtils.OS2IP(D, false);
+            Has_PUBLIC_Info = true;
+            Has_PRIVATE_Info = true;
+        }
+
+        /// <summary>
+        ///     Initialize the RSA class. For CRT.
+        /// </summary>
+        /// <param name="Modulus">Modulus of the RSA key.</param>
+        /// <param name="Exponent">Exponent of the RSA key</param>
+        /// ///
+        /// <param name="D">Exponent of the RSA key</param>
+        /// <param name="P">P paramater of RSA Algorithm.</param>
+        /// <param name="Q">Q paramater of RSA Algorithm.</param>
+        /// <param name="DP">DP paramater of RSA Algorithm.</param>
+        /// <param name="DQ">DQ paramater of RSA Algorithm.</param>
+        /// <param name="InverseQ">InverseQ paramater of RSA Algorithm.</param>
+        /// <param name="ModulusSize">Modulus size in number of bits. Ex: 512, 1024, 2048, 4096 etc.</param>
+        public RSAProviderParameters(byte[] Modulus, byte[] Exponent, byte[] D, byte[] P, byte[] Q, byte[] DP, byte[] DQ,
+            byte[] InverseQ, int ModulusSize)
+        {
+            // rsaParams;
+            OctetsInModulus = ModulusSize/8;
+            E = RSAProviderUtils.OS2IP(Exponent, false);
+            N = RSAProviderUtils.OS2IP(Modulus, false);
+            this.D = RSAProviderUtils.OS2IP(D, false);
+            this.P = RSAProviderUtils.OS2IP(P, false);
+            this.Q = RSAProviderUtils.OS2IP(Q, false);
+            this.DP = RSAProviderUtils.OS2IP(DP, false);
+            this.DQ = RSAProviderUtils.OS2IP(DQ, false);
+            this.InverseQ = RSAProviderUtils.OS2IP(InverseQ, false);
+            HasCRTInfo = true;
+            Has_PUBLIC_Info = true;
+            Has_PRIVATE_Info = true;
+        }
+
+        /// <summary>
+        ///     Gets and sets the HashAlgorithm for RSA-OAEP padding.
         /// </summary>
         public RSAProviderHashAlgorithm HashAlgorithm
         {
             get
             {
-                RSAProviderHashAlgorithm al = RSAProviderHashAlgorithm.UNDEFINED;
+                var al = RSAProviderHashAlgorithm.UNDEFINED;
                 switch (ha.GetType().ToString())
                 {
                     case "SHA1":
@@ -71,209 +136,62 @@ namespace OmniBean.PowerCrypt4
                 switch (value)
                 {
                     case RSAProviderHashAlgorithm.SHA1:
-                        ha = SHA1Managed.Create();
-                        _hLen = 20;
+                        ha = SHA1.Create();
+                        hLen = 20;
                         break;
 
                     case RSAProviderHashAlgorithm.SHA256:
-                        ha = SHA256Managed.Create();
-                        _hLen = 32;
+                        ha = SHA256.Create();
+                        hLen = 32;
                         break;
 
                     case RSAProviderHashAlgorithm.SHA512:
-                        ha = SHA512Managed.Create();
-                        _hLen = 64;
+                        ha = SHA512.Create();
+                        hLen = 64;
                         break;
                 }
             }
         }
 
-        public bool HasCRTInfo
-        {
-            get
-            {
-                return _Has_CRT_Info;
-            }
-        }
+        public bool HasCRTInfo { get; }
 
-        public bool Has_PRIVATE_Info
-        {
-            get
-            {
-                return _Has_PRIVATE_Info;
-            }
-        }
+        public bool Has_PRIVATE_Info { get; }
 
-        public bool Has_PUBLIC_Info
-        {
-            get
-            {
-                return _Has_PUBLIC_Info;
-            }
-        }
+        public bool Has_PUBLIC_Info { get; }
 
-        public int OctetsInModulus
-        {
-            get
-            {
-                return _ModulusOctets;
-            }
-        }
+        public int OctetsInModulus { get; }
 
-        public BigInteger N
-        {
-            get
-            {
-                return _N;
-            }
-        }
+        public BigInteger N { get; }
 
-        public int hLen
-        {
-            get
-            {
-                return _hLen;
-            }
-        }
+        public int hLen { get; private set; } = 20;
 
-        public BigInteger P
-        {
-            get
-            {
-                return _P;
-            }
-        }
+        public BigInteger P { get; }
 
-        public BigInteger Q
-        {
-            get
-            {
-                return _Q;
-            }
-        }
+        public BigInteger Q { get; }
 
-        public BigInteger DP
-        {
-            get
-            {
-                return _DP;
-            }
-        }
+        public BigInteger DP { get; }
 
-        public BigInteger DQ
-        {
-            get
-            {
-                return _DQ;
-            }
-        }
+        public BigInteger DQ { get; }
 
-        public BigInteger InverseQ
-        {
-            get
-            {
-                return _InverseQ;
-            }
-        }
+        public BigInteger InverseQ { get; }
 
-        public BigInteger E
-        {
-            get
-            {
-                return _E;
-            }
-        }
+        public BigInteger E { get; }
 
-        public BigInteger D
+        public BigInteger D { get; }
+
+        public void Dispose()
         {
-            get
-            {
-                return _D;
-            }
+            ha.Dispose();
         }
 
         /// <summary>
-        /// Initialize the RSA class. It's assumed that both the Public and Extended Private info are there.
+        ///     Computes the hash from the given data.
         /// </summary>
-        /// <param name="rsaParams">Preallocated RSAParameters containing the required keys.</param>
-        /// <param name="ModulusSize">Modulus size in bits</param>
-        public RSAProviderParameters(RSAParameters rsaParams, int ModulusSize)
+        /// <param name="data">The data to hash.</param>
+        /// <returns>Hash of the data.</returns>
+        public byte[] ComputeHash(byte[] data)
         {
-            // rsaParams;
-            _ModulusOctets = ModulusSize / 8;
-            _E = RSAProviderUtils.OS2IP(rsaParams.Exponent, false);
-            _D = RSAProviderUtils.OS2IP(rsaParams.D, false);
-            _N = RSAProviderUtils.OS2IP(rsaParams.Modulus, false);
-            _P = RSAProviderUtils.OS2IP(rsaParams.P, false);
-            _Q = RSAProviderUtils.OS2IP(rsaParams.Q, false);
-            _DP = RSAProviderUtils.OS2IP(rsaParams.DP, false);
-            _DQ = RSAProviderUtils.OS2IP(rsaParams.DQ, false);
-            _InverseQ = RSAProviderUtils.OS2IP(rsaParams.InverseQ, false);
-            _Has_CRT_Info = true;
-            _Has_PUBLIC_Info = true;
-            _Has_PRIVATE_Info = true;
-        }
-
-        /// <summary>
-        /// Initialize the RSA class. Only the public parameters.
-        /// </summary>
-        /// <param name="Modulus">Modulus of the RSA key.</param>
-        /// <param name="Exponent">Exponent of the RSA key</param>
-        /// <param name="ModulusSize">Modulus size in number of bits. Ex: 512, 1024, 2048, 4096 etc.</param>
-        public RSAProviderParameters(byte[] Modulus, byte[] Exponent, int ModulusSize)
-        {
-            // rsaParams;
-            _ModulusOctets = ModulusSize / 8;
-            _E = RSAProviderUtils.OS2IP(Exponent, false);
-            _N = RSAProviderUtils.OS2IP(Modulus, false);
-            _Has_PUBLIC_Info = true;
-        }
-
-        /// <summary>
-        /// Initialize the RSA class.
-        /// </summary>
-        /// <param name="Modulus">Modulus of the RSA key.</param>
-        /// <param name="Exponent">Exponent of the RSA key</param>
-        /// /// <param name="D">Exponent of the RSA key</param>
-        /// <param name="ModulusSize">Modulus size in number of bits. Ex: 512, 1024, 2048, 4096 etc.</param>
-        public RSAProviderParameters(byte[] Modulus, byte[] Exponent, byte[] D, int ModulusSize)
-        {
-            // rsaParams;
-            _ModulusOctets = ModulusSize / 8;
-            _E = RSAProviderUtils.OS2IP(Exponent, false);
-            _N = RSAProviderUtils.OS2IP(Modulus, false);
-            _D = RSAProviderUtils.OS2IP(D, false);
-            _Has_PUBLIC_Info = true;
-            _Has_PRIVATE_Info = true;
-        }
-
-        /// <summary>
-        /// Initialize the RSA class. For CRT.
-        /// </summary>
-        /// <param name="Modulus">Modulus of the RSA key.</param>
-        /// <param name="Exponent">Exponent of the RSA key</param>
-        /// /// <param name="D">Exponent of the RSA key</param>
-        /// <param name="P">P paramater of RSA Algorithm.</param>
-        /// <param name="Q">Q paramater of RSA Algorithm.</param>
-        /// <param name="DP">DP paramater of RSA Algorithm.</param>
-        /// <param name="DQ">DQ paramater of RSA Algorithm.</param>
-        /// <param name="InverseQ">InverseQ paramater of RSA Algorithm.</param>
-        /// <param name="ModulusSize">Modulus size in number of bits. Ex: 512, 1024, 2048, 4096 etc.</param>
-        public RSAProviderParameters(byte[] Modulus, byte[] Exponent, byte[] D, byte[] P, byte[] Q, byte[] DP, byte[] DQ, byte[] InverseQ, int ModulusSize)
-        {
-            // rsaParams;
-            _ModulusOctets = ModulusSize / 8;
-            _E = RSAProviderUtils.OS2IP(Exponent, false);
-            _N = RSAProviderUtils.OS2IP(Modulus, false);
-            _D = RSAProviderUtils.OS2IP(D, false);
-            _P = RSAProviderUtils.OS2IP(P, false);
-            _Q = RSAProviderUtils.OS2IP(Q, false);
-            _DP = RSAProviderUtils.OS2IP(DP, false);
-            _DQ = RSAProviderUtils.OS2IP(DQ, false);
-            _InverseQ = RSAProviderUtils.OS2IP(InverseQ, false);
-            _Has_CRT_Info = true;
-            _Has_PUBLIC_Info = true;
-            _Has_PRIVATE_Info = true;
+            return ha.ComputeHash(data);
         }
     }
 }

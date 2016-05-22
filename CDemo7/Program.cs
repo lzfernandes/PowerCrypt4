@@ -12,37 +12,37 @@ namespace CDemo7
         public static void Main(string[] args)
         {
             const int rsaKeySize = 728;
-            PowerRSA prsa = new PowerRSA(rsaKeySize, PowerRSA.PHashAlgorithm.SHA256);
+            var prsa = new PowerRSA(rsaKeySize, PowerRSA.PHashAlgorithm.SHA256);
             const string p = "this is n";
-            string c = prsa.EncryptStringWithPublicKey(p);
+            var c = prsa.EncryptStringWithPublicKey(p);
             Console.WriteLine(c);
-            string d = prsa.DecryptStringWithPrivateKey(c);
+            var d = prsa.DecryptStringWithPrivateKey(c);
             Console.WriteLine(d);
-            string x = prsa.PublicKey;
+            var x = prsa.PublicKey;
             Console.WriteLine("RSAProvider Data: " + prsa.PrivateKey);
             Console.WriteLine("Exporting Private key to PKCS format:");
-            string priPemKey = RSAExtensions.ConvertPrivateKeyToPKCS(prsa);
+            var priPemKey = RSAExtensions.ConvertPrivateKeyToPKCS(prsa);
             Console.WriteLine(priPemKey);
             Console.Write("PKCS Signing...");
             const string signData = "Hello, World!";
-            string signature = RSAExtensions.SignWithPKCSPrivateKey(signData, prsa);
+            var signature = RSAExtensions.SignWithPKCSPrivateKey(signData, prsa);
             Console.WriteLine(signature);
             Console.Write("Verifying...");
-            bool verification = RSAExtensions.VerifyWithPKCSPublicKey(signData, signature, prsa);
+            var verification = RSAExtensions.VerifyWithPKCSPublicKey(signData, signature, prsa);
             Console.WriteLine(verification);
 
             prsa.Dispose();
 
-            PowerRSA pub = new PowerRSA(x, rsaKeySize, PowerRSA.PHashAlgorithm.SHA256);
-            string e = pub.EncryptStringWithPublicKey(p);
-            string d2 = prsa.DecryptStringWithPrivateKey(e);
+            var pub = new PowerRSA(x, rsaKeySize, PowerRSA.PHashAlgorithm.SHA256);
+            var e = pub.EncryptStringWithPublicKey(p);
+            var d2 = prsa.DecryptStringWithPrivateKey(e);
             Console.WriteLine(d2);
             pub.Dispose();
             Console.WriteLine(e);
             const string k = "1234";
-            string a1 = PowerAES.Encrypt(p, k);
+            var a1 = PowerAES.Encrypt(p, k);
             Console.WriteLine(a1);
-            string d1 = PowerAES.Decrypt(a1, k);
+            var d1 = PowerAES.Decrypt(a1, k);
             Console.WriteLine(d1);
             Console.WriteLine(PowerAES.SHA512Hash(p));
             Console.ReadKey();
@@ -62,7 +62,7 @@ namespace CDemo7
 			Console.ReadKey(true);
 			*/
             Console.WriteLine("Hash Test");
-            string hash = HashUtils.SHA512(k);
+            var hash = HashUtils.SHA512(k);
             Console.WriteLine(hash);
         }
     }

@@ -2,19 +2,18 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 
 namespace OmniBean.PowerCrypt4
 {
     /// <summary>
-    /// Extensions for PowerRSA
+    ///     Extensions for PowerRSA
     /// </summary>
     public static class RSAExtensions
     {
         /// <summary>
-        /// Generates a PKCS private key from the PowerRSA object
+        ///     Generates a PKCS private key from the PowerRSA object
         /// </summary>
         /// <param name="prsa"></param>
         /// <returns></returns>
@@ -44,9 +43,9 @@ namespace OmniBean.PowerCrypt4
             rsa.FromXmlString(prsa.PrivateKey);
             var bcKeyPair = DotNetUtilities.GetRsaKeyPair(rsa);
             signer.Init(true, bcKeyPair.Private);
-            byte[] byteplaintext = Encoding.UTF8.GetBytes(plaintext);
+            var byteplaintext = Encoding.UTF8.GetBytes(plaintext);
             signer.BlockUpdate(byteplaintext, 0, byteplaintext.Length);
-            byte[] signature = signer.GenerateSignature();
+            var signature = signer.GenerateSignature();
             /* Base 64 encode the sig so its 8-bit clean */
             var signedString = Convert.ToBase64String(signature);
             return signedString;
@@ -57,7 +56,7 @@ namespace OmniBean.PowerCrypt4
             var rsa = RSA.Create();
             rsa.FromXmlString(prsa.PublicKey);
             /* Make the key */
-            RsaKeyParameters key = DotNetUtilities.GetRsaPublicKey(rsa);
+            var key = DotNetUtilities.GetRsaPublicKey(rsa);
             /* Init alg */
             var signer = SignerUtilities.GetSigner("SHA256withRSA");
             /* Populate key */

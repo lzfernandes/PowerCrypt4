@@ -10,7 +10,7 @@ namespace OmniBean.PowerCrypt4
         public static int KeyLengthBits = 256; //AES Key Length in bits
         public static int SaltLength = 8; //Salt length in bytes
         public static int IterationCount = 2000; //Passkey iterations
-        private static RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+        private static readonly RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 
         public static string DecryptString(string ciphertext, string passphrase)
         {
@@ -22,10 +22,10 @@ namespace OmniBean.PowerCrypt4
                 var ciphertextBytes = Convert.FromBase64String(inputs[2]); // Extract the ciphertext
 
                 // Derive the key from the supplied passphrase and extracted salt
-                byte[] key = DeriveKeyFromPassphrase(passphrase, salt);
+                var key = DeriveKeyFromPassphrase(passphrase, salt);
 
                 // Decrypt
-                byte[] plaintext = DoCryptoOperation(ciphertextBytes, key, iv, false);
+                var plaintext = DoCryptoOperation(ciphertextBytes, key, iv, false);
 
                 // Return the decrypted string
                 return Encoding.UTF8.GetString(plaintext);
@@ -49,7 +49,8 @@ namespace OmniBean.PowerCrypt4
                 var ciphertext = DoCryptoOperation(Encoding.UTF8.GetBytes(plaintext), key, iv, true);
 
                 // Return the formatted string
-                return String.Format("{0}:{1}:{2}", Convert.ToBase64String(iv), Convert.ToBase64String(salt), Convert.ToBase64String(ciphertext));
+                return string.Format("{0}:{1}:{2}", Convert.ToBase64String(iv), Convert.ToBase64String(salt),
+                    Convert.ToBase64String(ciphertext));
             }
             catch (Exception ex)
             {
@@ -60,9 +61,9 @@ namespace OmniBean.PowerCrypt4
 
         private static byte[] DeriveKeyFromPassphrase(string passphrase, byte[] salt)
         {
-            var keyDerivationFunction = new Rfc2898DeriveBytes(passphrase, salt, IterationCount);  //PBKDF2
+            var keyDerivationFunction = new Rfc2898DeriveBytes(passphrase, salt, IterationCount); //PBKDF2
 
-            return keyDerivationFunction.GetBytes(KeyLengthBits / 8);
+            return keyDerivationFunction.GetBytes(KeyLengthBits/8);
         }
 
         public static byte[] GenerateRandomBytes(int lengthBytes)
@@ -103,9 +104,9 @@ namespace OmniBean.PowerCrypt4
         {
             try
             {
-                MD5 md5 = MD5.Create();
-                byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-                byte[] hash = md5.ComputeHash(inputBytes);
+                var md5 = MD5.Create();
+                var inputBytes = Encoding.UTF8.GetBytes(input);
+                var hash = md5.ComputeHash(inputBytes);
                 return HexString(hash);
             }
             catch (Exception ex)
@@ -119,9 +120,9 @@ namespace OmniBean.PowerCrypt4
         {
             try
             {
-                MD5 md5 = MD5.Create();
-                byte[] inputBytes = System.IO.File.ReadAllBytes(fileName);
-                byte[] hash = md5.ComputeHash(inputBytes);
+                var md5 = MD5.Create();
+                var inputBytes = File.ReadAllBytes(fileName);
+                var hash = md5.ComputeHash(inputBytes);
                 return HexString(hash);
             }
             catch (Exception ex)
@@ -135,9 +136,9 @@ namespace OmniBean.PowerCrypt4
         {
             try
             {
-                SHA512 sha512 = SHA512.Create();
-                byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-                byte[] hash = sha512.ComputeHash(inputBytes);
+                var sha512 = SHA512.Create();
+                var inputBytes = Encoding.UTF8.GetBytes(input);
+                var hash = sha512.ComputeHash(inputBytes);
                 return HexString(hash);
             }
             catch (Exception ex)
@@ -151,9 +152,9 @@ namespace OmniBean.PowerCrypt4
         {
             try
             {
-                SHA512 sha512 = SHA512.Create();
-                byte[] inputBytes = System.IO.File.ReadAllBytes(fileName);
-                byte[] hash = sha512.ComputeHash(inputBytes);
+                var sha512 = SHA512.Create();
+                var inputBytes = File.ReadAllBytes(fileName);
+                var hash = sha512.ComputeHash(inputBytes);
                 return HexString(hash);
             }
             catch (Exception ex)
@@ -165,8 +166,8 @@ namespace OmniBean.PowerCrypt4
 
         public static string HexString(byte[] bytes)
         {
-            StringBuilder sBuilder = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i++)
+            var sBuilder = new StringBuilder();
+            for (var i = 0; i < bytes.Length; i++)
             {
                 sBuilder.Append(bytes[i].ToString("x2"));
             }
@@ -175,13 +176,12 @@ namespace OmniBean.PowerCrypt4
     }
 
     /// <summary>
-    /// OmniBean Library for Encryption and hash methods.
+    ///     OmniBean Library for Encryption and hash methods.
     /// </summary>
-
     public class PowerAES
     {
         /// <summary>
-        /// Encrypt some text using AES encryption and a password key.
+        ///     Encrypt some text using AES encryption and a password key.
         /// </summary>
         /// <param name="plaintext">The text to encrypt.</param>
         /// <param name="key">The password key for the encryption.</param>
@@ -192,7 +192,7 @@ namespace OmniBean.PowerCrypt4
         }
 
         /// <summary>
-        /// Decrypt an AES encrypted cipher (previously encrypted) using a password key.
+        ///     Decrypt an AES encrypted cipher (previously encrypted) using a password key.
         /// </summary>
         /// <param name="cipher">The encrypted text (cipher).</param>
         /// <param name="password">The password key for the encryption.</param>
@@ -203,8 +203,8 @@ namespace OmniBean.PowerCrypt4
         }
 
         /// <summary>
-        /// Create an MD5 hash of a text input (http://wikipedia.org/wiki/MD5).
-        /// This 32 character hash is recommended where a general or shorter hash is required (password or data integrity).
+        ///     Create an MD5 hash of a text input (http://wikipedia.org/wiki/MD5).
+        ///     This 32 character hash is recommended where a general or shorter hash is required (password or data integrity).
         /// </summary>
         /// <param name="text">A text or password to create a hash.</param>
         /// <returns>The 32 character hex MD5 Hash.</returns>
@@ -214,14 +214,14 @@ namespace OmniBean.PowerCrypt4
         }
 
         /// <summary>
-        /// Create an MD5 hash of a file.
-        /// This 32 character hash is for file data integrity checks (e.g. a file contents is unchanged).
+        ///     Create an MD5 hash of a file.
+        ///     This 32 character hash is for file data integrity checks (e.g. a file contents is unchanged).
         /// </summary>
         /// <param name="fileName">The full path to a file to get the hash.</param>
         /// <returns>The 32 character hex MD5 Hash.</returns>
         public static string MD5HashFile(string fileName)
         {
-            if (!System.IO.File.Exists(fileName))
+            if (!File.Exists(fileName))
             {
                 //Utilities.OnFileError(Utilities.GetCurrentMethod(), fileName);
                 throw new CryptographicException("File does not exist.");
@@ -230,13 +230,13 @@ namespace OmniBean.PowerCrypt4
         }
 
         /// <summary>
-        /// Create an SHA512 hash of a file.
+        ///     Create an SHA512 hash of a file.
         /// </summary>
         /// <param name="fileName">The full path to a file to get the hash.</param>
         /// <returns>The SHA512 Hash.</returns>
         public static string SHA512HashFile(string fileName)
         {
-            if (!System.IO.File.Exists(fileName))
+            if (!File.Exists(fileName))
             {
                 //Utilities.OnFileError(Utilities.GetCurrentMethod(), fileName);
                 throw new CryptographicException("File does not exist.");
@@ -245,8 +245,8 @@ namespace OmniBean.PowerCrypt4
         }
 
         /// <summary>
-        /// Create a SHA2-512 hash of a text input.
-        /// This 128 character hash is recommended for the most secure password encryption.
+        ///     Create a SHA2-512 hash of a text input.
+        ///     This 128 character hash is recommended for the most secure password encryption.
         /// </summary>
         /// <param name="password">A text to create a hash (often a password).</param>
         /// <returns>The 128 character hex SHA512 Hash.</returns>
