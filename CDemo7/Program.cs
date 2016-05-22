@@ -3,6 +3,9 @@
  */
 
 using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using OmniBean.PowerCrypt4;
 
 namespace CDemo7
@@ -11,7 +14,7 @@ namespace CDemo7
     {
         public static void Main(string[] args)
         {
-            const int rsaKeySize = 728;
+            const int rsaKeySize = 728; //Smaller key sizes are easier to generate while testing
             var prsa = new PowerRSA(rsaKeySize, PowerRSA.PHashAlgorithm.SHA256);
             const string p = "this is n";
             var c = prsa.EncryptStringWithPublicKey(p);
@@ -45,25 +48,20 @@ namespace CDemo7
             var d1 = PowerAES.Decrypt(a1, k);
             Console.WriteLine(d1);
             Console.WriteLine(PowerAES.SHA512Hash(p));
-            Console.ReadKey();
-            /*
-			Console.WriteLine("PowerCrypt4");
-			int keyLength = 1024;
-			RSACryptoServiceProvider csp = new RSACryptoServiceProvider(keyLength);
-            string rsaKeyInfo = csp.ToXmlString(true).Replace("><", ">\r\n<");
-			RSAProvider rsa = new RSAProvider(rsaKeyInfo, keyLength);
-			string plaintext = "encryptme";
-			byte[] CTX = rsa.Encrypt(Encoding.UTF8.GetBytes(plaintext), true, true);
-			string CipherText = Convert.ToBase64String(CTX);
-			Console.WriteLine(CipherText);
-			byte[] PTX = rsa.Decrypt(CTX, false, true);
-			string DecryptedString = Encoding.UTF8.GetString(PTX);
-			Console.WriteLine(DecryptedString);
-			Console.ReadKey(true);
-			*/
+
+            Console.WriteLine("Testing encryption directly on bytes...");
+            byte[] salt = AESProvider.GenerateRandomBytes(24);
+            byte[] key = AESProvider.DeriveKeyFromPassphrase("monkey", salt);
+            var iv = AESProvider.GenerateRandomBytes(16); //256-bit IV
+            byte[] plaintextBytes = Encoding.UTF8.GetBytes("Hi I am a monkey");
+            byte[] encryptedBytes = AESProvider.EncryptBytes(plaintextBytes, key, iv);
+            byte[] decryptedBytes = AESProvider.DecryptBytes(iv, salt, encryptedBytes, key);
+            Debug.Assert(decryptedBytes.SequenceEqual(plaintextBytes));
             Console.WriteLine("Hash Test");
             var hash = HashUtils.SHA512(k);
             Console.WriteLine(hash);
+            Console.WriteLine("Demo completed");
+            Console.ReadKey();
         }
     }
 }
