@@ -49,13 +49,21 @@ namespace CDemo7
             Console.WriteLine(d1);
             Console.WriteLine(PowerAES.SHA512Hash(p));
 
-            Console.WriteLine("Testing encryption directly on bytes...");
-            byte[] salt = AESProvider.GenerateRandomBytes(24);
-            byte[] key = AESProvider.DeriveKeyFromPassphrase("monkey", salt);
-            var iv = AESProvider.GenerateRandomBytes(16); //256-bit IV
-            byte[] plaintextBytes = Encoding.UTF8.GetBytes("Hi I am a monkey");
-            byte[] encryptedBytes = AESProvider.EncryptBytes(plaintextBytes, key, iv);
-            byte[] decryptedBytes = AESProvider.DecryptBytes(iv, salt, encryptedBytes, key);
+            Console.WriteLine("Testing AES encryption on strings...");
+            var plaintextString = "Hi i like pie";
+            var password = "monkeys like cupcakes! this is a random passphrase!";
+            var encryptedString = PowerAES.Encrypt(plaintextString, password);
+            var decryptedString = PowerAES.Decrypt(encryptedString, password);
+            Debug.Assert(decryptedString == plaintextString);
+
+            Console.WriteLine("Testing AES encryption directly on bytes...");
+            var aesProvider = new AESProvider();
+            var salt = aesProvider.GenerateRandomBytes(24);
+            var key = aesProvider.DeriveKeyFromPassphrase("monkey", salt);
+            var iv = aesProvider.GenerateRandomBytes(16); //256-bit IV
+            var plaintextBytes = Encoding.UTF8.GetBytes("Hi I am a monkey");
+            var encryptedBytes = aesProvider.EncryptBytes(plaintextBytes, key, iv);
+            var decryptedBytes = aesProvider.DecryptBytes(iv, salt, encryptedBytes, key);
             Debug.Assert(decryptedBytes.SequenceEqual(plaintextBytes));
             Console.WriteLine("Hash Test");
             var hash = HashUtils.SHA512(k);

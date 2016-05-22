@@ -1,239 +1,55 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace OmniBean.PowerCrypt4
 {
     /// <summary>
-    /// An internal AES class. Use the PowerAES class for more high-level operations
+    ///     A class providing AES encryption and some hash utilities
     /// </summary>
-    public class AESProvider
+    public static class PowerAES
     {
         #region Public Fields
 
-        public static int IterationCount = 2000;
-        public static int KeyLengthBits = 256; //AES Key Length in bits
-        public static int SaltLength = 24; //Salt for PBKDF2
+        public static readonly AESProvider AESCryptoProvider;
 
         #endregion Public Fields
 
-        #region Private Fields
+        #region Public Constructors
 
-        //Salt length in bytes
-        //Passkey iterations
-        private static readonly RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-
-        #endregion Private Fields
-
-        #region Public Methods
-
-        public static string CalculateMD5Hash(string input)
+        static PowerAES()
         {
-            try
-            {
-                var md5 = MD5.Create();
-                var inputBytes = Encoding.UTF8.GetBytes(input);
-                var hash = md5.ComputeHash(inputBytes);
-                return HexString(hash);
-            }
-            catch (Exception ex)
-            {
-                throw new CryptographicException("Operation Failed.", ex);
-            }
+            AESCryptoProvider = new AESProvider();
         }
 
-        public static string CalculateMD5HashFile(string fileName)
-        {
-            try
-            {
-                var md5 = MD5.Create();
-                var inputBytes = File.ReadAllBytes(fileName);
-                var hash = md5.ComputeHash(inputBytes);
-                return HexString(hash);
-            }
-            catch (Exception ex)
-            {
-                throw new CryptographicException("Operation Failed.", ex);
-            }
-        }
+        #endregion Public Constructors
 
-        public static string CalculateSHA512Hash(string input)
-        {
-            try
-            {
-                var sha512 = SHA512.Create();
-                var inputBytes = Encoding.UTF8.GetBytes(input);
-                var hash = sha512.ComputeHash(inputBytes);
-                return HexString(hash);
-            }
-            catch (Exception ex)
-            {
-                throw new CryptographicException("Operation Failed.", ex);
-            }
-        }
-
-        public static string CalculateSHA512HashFile(string fileName)
-        {
-            try
-            {
-                var sha512 = SHA512.Create();
-                var inputBytes = File.ReadAllBytes(fileName);
-                var hash = sha512.ComputeHash(inputBytes);
-                return HexString(hash);
-            }
-            catch (Exception ex)
-            {
-                throw new CryptographicException("Operation Failed.", ex);
-            }
-        }
-
-        public static byte[] DecryptBytes(byte[] iv, byte[] salt, byte[] ciphertextBytes, byte[] key)
-        {
-            // Decrypt
-            var plaintext = DoCryptoOperation(ciphertextBytes, key, iv, false);
-            return plaintext;
-        }
-
-        public static string DecryptString(string ciphertext, string passphrase)
-        {
-            try
-            {
-                var inputs = ciphertext.Split(":".ToCharArray(), 3);
-                var iv = Convert.FromBase64String(inputs[0]); // Extract the IV
-                var salt = Convert.FromBase64String(inputs[1]); // Extract the salt
-                var ciphertextBytes = Convert.FromBase64String(inputs[2]); // Extract the ciphertext
-                                                                           // Derive the key from the supplied passphrase and extracted salt
-                var key = DeriveKeyFromPassphrase(passphrase, salt);
-
-                var plaintext = DecryptBytes(iv, salt, ciphertextBytes, key);
-
-                // Return the decrypted string
-                return Encoding.UTF8.GetString(plaintext);
-            }
-            catch (Exception ex)
-            {
-                throw new CryptographicException("Key did not match the ciphertext.", ex);
-            }
-        }
-
-        public static byte[] EncryptBytes(byte[] plaintext, byte[] key, byte[] iv)
-        {
-            // Encrypt
-            var ciphertext = DoCryptoOperation(plaintext, key, iv, true);
-            return ciphertext;
-        }
-
-        public static string EncryptString(string plaintext, string passphrase)
-        {
-            try
-            {
-                var salt = GenerateRandomBytes(SaltLength); // Random salt
-                var iv = GenerateRandomBytes(16); // AES always uses a 128-bit block size
-                var key = DeriveKeyFromPassphrase(passphrase, salt); // Derive the key from the passphrase
-
-                var ciphertext = EncryptBytes(Encoding.UTF8.GetBytes(plaintext), key, iv);
-
-                // Return the formatted string
-                return
-                    $"{Convert.ToBase64String(iv)}:{Convert.ToBase64String(salt)}:{Convert.ToBase64String(ciphertext)}";
-            }
-            catch (Exception ex)
-            {
-                throw new CryptographicException("Cryptographic error while Encrypting.", ex);
-            }
-        }
-
-        public static byte[] GenerateRandomBytes(int lengthBytes)
-        {
-            var bytes = new byte[lengthBytes];
-            rng.GetBytes(bytes);
-            return bytes;
-        }
-
-        public static string HexString(byte[] bytes)
-        {
-            var sBuilder = new StringBuilder();
-            foreach (var t in bytes)
-            {
-                sBuilder.Append(t.ToString("x2"));
-            }
-            return sBuilder.ToString();
-        }
-
-        #endregion Public Methods
-
-        #region Private Methods
-
-        public static byte[] DeriveKeyFromPassphrase(string passphrase, byte[] salt)
-        {
-            var keyDerivationFunction = new Rfc2898DeriveBytes(passphrase, salt, IterationCount); //PBKDF2
-            return keyDerivationFunction.GetBytes(KeyLengthBits / 8);
-        }
-
-        private static byte[] DoCryptoOperation(byte[] inputData, byte[] key, byte[] iv, bool encrypt)
-        {
-            byte[] output;
-
-            using (var aes = new AesCryptoServiceProvider())
-            using (var ms = new MemoryStream())
-            {
-                aes.Mode = CipherMode.CBC; //Explicitly set mode
-
-                var cryptoTransform = encrypt ? aes.CreateEncryptor(key, iv) : aes.CreateDecryptor(key, iv);
-
-                try
-                {
-                    using (var cs = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write))
-                    {
-                        cs.Write(inputData, 0, inputData.Length);
-                    }
-                    output = ms.ToArray();
-                }
-                catch
-                {
-                    output = new byte[0];
-                }
-            }
-
-            return output;
-        }
-
-        #endregion Private Methods
-    }
-
-    /// <summary>
-    ///     A class providing AES encryption and some hash utilities
-    /// </summary>
-    public class PowerAES
-    {
         #region Public Methods
 
         /// <summary>
-        ///     Decrypt an AES encrypted cipher (previously encrypted) using a password key.
+        ///     Decrypt an AES encrypted ciphertext (previously encrypted with the Encrypt method) using a password.
         /// </summary>
-        /// <param name="cipher">The encrypted text (cipher).</param>
-        /// <param name="password">The password key for the encryption.</param>
-        /// <returns>The original unencrypted text or "" if password and cipher don't match.</returns>
-        public static string Decrypt(string cipher, string password)
+        /// <param name="ciphertext">The encrypted text (ciphertext).</param>
+        /// <param name="password">The password for the encryption.</param>
+        /// <returns>The original unencrypted text or "" if password and ciphertext don't match.</returns>
+        public static string Decrypt(string ciphertext, string password)
         {
-            return AESProvider.DecryptString(cipher, password);
+            return AESCryptoProvider.DecryptString(ciphertext, password);
         }
 
         /// <summary>
-        ///     Encrypt some text using AES encryption and a password key.
+        ///     Encrypt some text using AES encryption and a password.
         /// </summary>
         /// <param name="plaintext">The text to encrypt.</param>
-        /// <param name="key">The password key for the encryption.</param>
-        /// <returns>The encrypted text (cipher).</returns>
-        public static string Encrypt(string plaintext, string key)
+        /// <param name="password">The password for the encryption.</param>
+        /// <returns>The encrypted text (ciphertext).</returns>
+        public static string Encrypt(string plaintext, string password)
         {
-            return AESProvider.EncryptString(plaintext, key);
+            return AESCryptoProvider.EncryptString(plaintext, password);
         }
 
         public static string GenerateRandomString(int length)
         {
-            return AESProvider.HexString(AESProvider.GenerateRandomBytes(length));
+            return AESProvider.HexString(AESCryptoProvider.GenerateRandomBytes(length));
         }
 
         /// <summary>
@@ -244,7 +60,7 @@ namespace OmniBean.PowerCrypt4
         /// <returns>The 32 character hex MD5 Hash.</returns>
         public static string MD5Hash(string text)
         {
-            return AESProvider.CalculateMD5Hash(text);
+            return AESCryptoProvider.CalculateMD5Hash(text);
         }
 
         /// <summary>
@@ -260,7 +76,7 @@ namespace OmniBean.PowerCrypt4
                 //Utilities.OnFileError(Utilities.GetCurrentMethod(), fileName);
                 throw new CryptographicException("File does not exist.");
             }
-            return AESProvider.CalculateMD5HashFile(fileName);
+            return AESCryptoProvider.CalculateMD5HashFile(fileName);
         }
 
         /// <summary>
@@ -271,7 +87,7 @@ namespace OmniBean.PowerCrypt4
         /// <returns>The 128 character hex SHA512 Hash.</returns>
         public static string SHA512Hash(string password)
         {
-            return AESProvider.CalculateSHA512Hash(password);
+            return AESCryptoProvider.CalculateSHA512Hash(password);
         }
 
         /// <summary>
@@ -286,7 +102,7 @@ namespace OmniBean.PowerCrypt4
                 //Utilities.OnFileError(Utilities.GetCurrentMethod(), fileName);
                 throw new CryptographicException("File does not exist.");
             }
-            return AESProvider.CalculateSHA512HashFile(fileName);
+            return AESCryptoProvider.CalculateSHA512HashFile(fileName);
         }
 
         #endregion Public Methods
