@@ -60,7 +60,7 @@ namespace CDemo7
             var aesProvider = new AESProvider();
             var salt = aesProvider.GenerateRandomBytes(24);
             var key = aesProvider.DeriveKeyFromPassphrase("monkey", salt);
-            var iv = aesProvider.GenerateRandomBytes(16); //256-bit IV
+            var iv = aesProvider.GenerateRandomBytes(16); //128-bit IV
             var plaintextBytes = Encoding.UTF8.GetBytes("Hi I am a monkey");
             var encryptedBytes = aesProvider.EncryptBytes(plaintextBytes, key, iv);
             var decryptedBytes = aesProvider.DecryptBytes(iv, salt, encryptedBytes, key);
